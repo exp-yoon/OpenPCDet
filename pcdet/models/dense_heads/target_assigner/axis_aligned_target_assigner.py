@@ -41,7 +41,10 @@ class AxisAlignedTargetAssigner(object):
         Returns:
 
         """
-
+        
+        # all_anchors[0] : torch.Size([1, 248, 216, 1, 2, 7])
+        # len(all_anchors) = 3 -> Car, pedestrian, cyclist 
+        
         bbox_targets = []
         cls_labels = []
         reg_weights = []
@@ -80,6 +83,11 @@ class AxisAlignedTargetAssigner(object):
                     anchors = anchors.view(-1, anchors.shape[-1])
                     selected_classes = cur_gt_classes[mask]
 
+                # single_target :'box_cls_labels', 'box_reg_targets', 'reg_weights' key를 갖는 dict
+                # 'box_cls_labels' : torch.Size([107136])
+                # 'box_reg_targets' : torch.Size([107136, 7])
+                # 'reg_weights' : torch.Size([107136])
+
                 single_target = self.assign_targets_single(
                     anchors,
                     cur_gt[mask],
@@ -116,10 +124,13 @@ class AxisAlignedTargetAssigner(object):
             bbox_targets.append(target_dict['box_reg_targets'])
             cls_labels.append(target_dict['box_cls_labels'])
             reg_weights.append(target_dict['reg_weights'])
+        import pdb;pdb.set_trace()
 
+        #torch.Size([4, 321408, 7])
         bbox_targets = torch.stack(bbox_targets, dim=0)
-
+        #torch.Size([4, 321408])
         cls_labels = torch.stack(cls_labels, dim=0)
+        #torch.Size([4, 321408])
         reg_weights = torch.stack(reg_weights, dim=0)
         all_targets_dict = {
             'box_cls_labels': cls_labels,

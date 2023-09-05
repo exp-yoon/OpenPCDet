@@ -12,6 +12,7 @@ class PointPillarScatter(nn.Module):
         assert self.nz == 1
 
     def forward(self, batch_dict, **kwargs):
+        import pdb; pdb.set_trace()
         pillar_features, coords = batch_dict['pillar_features'], batch_dict['voxel_coords']
         batch_spatial_features = []
         batch_size = coords[:, 0].max().int().item() + 1

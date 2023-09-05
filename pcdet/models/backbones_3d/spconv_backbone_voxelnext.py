@@ -174,19 +174,35 @@ class VoxelResBackBone8xVoxelNeXt(nn.Module):
             batch_dict:
                 encoded_spconv_tensor: sparse tensor
         """
+        # voxel_feature : spconv (349198, 5) // subm (334067, 5) 
+        # voxel_coords : (349198, 4)
         voxel_features, voxel_coords = batch_dict['voxel_features'], batch_dict['voxel_coords']
         batch_size = batch_dict['batch_size']
+        # input_sp_tensor : (349198, 5) // subm (334067, 5)
         input_sp_tensor = spconv.SparseConvTensor(
             features=voxel_features,
             indices=voxel_coords.int(),
             spatial_shape=self.sparse_shape,
             batch_size=batch_size
         )
+
+        import pdb;pdb.set_trace()
+        
+        # spconv -> x : (349198, 16)
+        # subm -> x : (334067, 16)
         x = self.conv_input(input_sp_tensor)
 
+        # spconv -> x_conv1 : (349198, 16)
+        # subm -> x_conv1 : (334067, 16)
         x_conv1 = self.conv1(x)
+        # spconv -> x_conv2 : (365814, 32)
+        # subm -> x_conv2 : (334067, 16)
         x_conv2 = self.conv2(x_conv1)
+        # spconv -> x_conv3 : (179525, 64)
+        # subm -> x_conv3 : (334067, 16)
         x_conv3 = self.conv3(x_conv2)
+        # spconv -> x_conv4 : (67807, 128)
+        # subm -> x_conv4 : (334067, 16)
         x_conv4 = self.conv4(x_conv3)
         x_conv5 = self.conv5(x_conv4)
         x_conv6 = self.conv6(x_conv5)
